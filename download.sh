@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "$1"]
+if [ $# -ne 1 ]
 then
   echo "You need to specify URL [ex: $(basename $0) URL]"
 else

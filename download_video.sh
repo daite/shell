@@ -47,7 +47,7 @@ if [ $# -eq 1 ]; then
         download_videos_async "$1"
     else
         echo "Downloading video from single URL: $1"
-        yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$1" &
+        yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$1"
     fi
 else
     echo "Usage: $0 input_file.txt or $0 url"

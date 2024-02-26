@@ -36,6 +36,7 @@ download_videos_async() {
     while IFS= read -r url; do
         yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$url" &
     done < "$1"
+    wait
 }
 
 # Check if only one argument provided

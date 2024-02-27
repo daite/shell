@@ -1,6 +1,6 @@
 # Video Downloader
 
-This script is designed to download YouTube videos using the yt-dlp library. It is specifically tailored for macOS.
+This script is designed to download videos using the yt-dlp library. It is specifically tailored for macOS.
 
 ## Prerequisites
 

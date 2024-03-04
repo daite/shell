@@ -2,6 +2,7 @@
 
 - [Video Downloader](#video-downloader): Download videos using the yt-dlp library on macOS.
 - [Zsh Setup Script](#zsh-setup-script): Automate the setup of Zsh shell with useful plugins and Powerlevel10k theme on macOS.
+- [Audio Extractor](#audio-extractor): extract audio from a video file and checks if the size of the extracted audio file exceeds 15MB.
 
 # Video Downloader
 
@@ -78,3 +79,24 @@ The `setup_zsh.sh` script automates the setup of Zsh shell with useful plugins a
 - Make sure to review the script before running it to ensure it meets your requirements.
 - After running the script, you may need to restart your terminal or run `source ~/.zshrc` for the changes to take effect.
 - Powerlevel10k configuration can be further customized by following the prompts during the first launch.
+
+# Audio Extractor
+
+This shell script extracts audio from a video file and checks if the size of the extracted audio file exceeds 15MB. If the size exceeds the limit, it displays a warning message and deletes the output audio file.
+
+## Prerequisites
+
+- Bash shell
+- ffmpeg (to install: `brew install ffmpeg`)
+
+## Usage
+
+1. Clone the repository or download the shell script.
+2. Make the script executable:
+   ```bash
+   chmod +x audio_extractor.sh
+   ```
+3. Run the script with a video file as a command-line argument
+   ```bash
+   ./audio_extractor.sh <video_file>
+   ```

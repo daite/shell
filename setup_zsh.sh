@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Check if the script is running on macOS
+if [[ $(uname) != "Darwin" ]]; then
+    echo "This script is intended for macOS only."
+    exit 1
+fi
+
+# Check if Homebrew is installed, if not, install it
+if ! command -v brew &> /dev/null; then
+    echo "Homebrew is not installed. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
 # Check if zsh-autosuggestions and zsh-syntax-highlighting are installed
 if ! brew list --formula | grep -q "zsh-autosuggestions"; then
     echo "Installing zsh-autosuggestions..."

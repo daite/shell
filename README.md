@@ -2,7 +2,7 @@
 
 - [Video Downloader](#video-downloader): Download videos using the yt-dlp library on macOS.
 - [Zsh Setup Script](#zsh-setup-script): Automate the setup of Zsh shell with useful plugins and Powerlevel10k theme on macOS.
-- [Audio Extractor](#audio-extractor): extract audio from a video file and checks if the size of the extracted audio file exceeds 15MB.
+- [Audio Extractor](#audio-extractor): extract audio from a video file and checks if the size of the audio file exceeds 15MB.
 
 # Video Downloader
 

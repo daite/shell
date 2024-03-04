@@ -1,3 +1,8 @@
+# Summary of Scripts
+
+- [Video Downloader](#video-downloader): This script is designed to download videos using the yt-dlp library. It is specifically tailored for macOS.
+- [Zsh Setup Script](#zsh-setup-script): The `setup_zsh.sh` script automates the setup of Zsh shell with useful plugins and Powerlevel10k theme on macOS.
+
 # Video Downloader
 
 This script is designed to download videos using the yt-dlp library. It is specifically tailored for macOS.

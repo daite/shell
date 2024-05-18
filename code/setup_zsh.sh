@@ -67,9 +67,11 @@ if ! brew list --formula | grep -q "ffmpeg"; then
 fi
 
 # Check and install yt-dlp using pip3 if not installed
+# error: externally-managed-environment; 
 if ! pip3 list | grep -q "yt-dlp"; then
     echo "Installing yt-dlp..."
-    pip3 install yt-dlp
+    python3 -m pip config set global.break-system-packages true
+    python3 -m pip install yt-dlp
 fi
 
 # Check and install Visual Studio Code if not installed

@@ -17,7 +17,7 @@ if ! command -v brew &> /dev/null; then
 fi
 
 # Array of Homebrew formulae and casks to install
-formulae=("zsh-autosuggestions" "zsh-syntax-highlighting" "python@3" "ffmpeg")
+formulae=("zsh-autosuggestions" "zsh-syntax-highlighting" "python@3" "ffmpeg", "golang")
 casks=("vlc" "google-chrome" "qbittorrent" "visual-studio-code")
 
 # Install Homebrew formulae

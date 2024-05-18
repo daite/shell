@@ -36,6 +36,48 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 # Add Powerlevel10k to the .zshrc file
 echo "source ~/powerlevel10k/powerlevel10k.zsh-theme" >> ~/.zshrc
 
+# Check and install VLC if not installed
+if ! brew list --cask | grep -q "vlc"; then
+    echo "Installing VLC..."
+    brew install --cask vlc
+fi
+
+# Check and install Google Chrome if not installed
+if ! brew list --cask | grep -q "google-chrome"; then
+    echo "Installing Google Chrome..."
+    brew install --cask google-chrome
+fi
+
+# Check and install qBittorrent if not installed
+if ! brew list --cask | grep -q "qbittorrent"; then
+    echo "Installing qBittorrent..."
+    brew install --cask qbittorrent
+fi
+
+# Check and install the latest version of Python 3 if not installed
+if ! brew list --formula | grep -q "python@3"; then
+    echo "Installing the latest version of Python 3..."
+    brew install python@3
+fi
+
+# Check and install ffmpeg if not installed
+if ! brew list --formula | grep -q "ffmpeg"; then
+    echo "Installing ffmpeg..."
+    brew install ffmpeg
+fi
+
+# Check and install yt-dlp using pip3 if not installed
+if ! pip3 list | grep -q "yt-dlp"; then
+    echo "Installing yt-dlp..."
+    pip3 install yt-dlp
+fi
+
+# Check and install Visual Studio Code if not installed
+if ! brew list --cask | grep -q "visual-studio-code"; then
+    echo "Installing Visual Studio Code..."
+    brew install --cask visual-studio-code
+fi
+
 # Reload .zshrc to start Powerlevel10k configuration
 source ~/.zshrc
 

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Function to install yt-dlp using Python 3
+# Function to install or upgrade yt-dlp using Python 3
 install_ytdlp_python3() {
-    echo "Installing yt-dlp using Python 3..."
-    python3 -m pip install yt-dlp
+    echo "Installing or upgrading yt-dlp using Python 3..."
+    python3 -m pip install yt-dlp -U
 }
 
-# Function to check if a video file already exists
-check_video_exists() {
+# Function to check if a file (video or audio) already exists
+check_file_exists() {
     local file_path="downloaded_videos/$1.$2"
     if [ -f "$file_path" ]; then
         echo "File already exists: $file_path"
@@ -17,69 +17,98 @@ check_video_exists() {
     fi
 }
 
-# Function to get title and extension of a video
+# Function to get title and extension of a video or audio
 get_title_and_ext() {
     local url="$1"
     title=$(yt-dlp --get-title "$url")
-    ext=$(yt-dlp --get-filename --restrict-filenames -o '%(ext)s' "$url")
+    if [[ "$2" == "audio" ]]; then
+        ext="m4a"  # Default extension for audio-only downloads
+    else
+        ext=$(yt-dlp --get-filename --restrict-filenames -o '%(ext)s' "$url")
+    fi
 }
 
-# Check if the operating system is macOS
-if [[ "$(uname)" == "Darwin" ]]; then
-    echo "Detected macOS."
-    
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
-        echo "Homebrew is not installed. Installing..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Initialization function to set up the environment and ensure yt-dlp is up to date
+init() {
+    # Check if the operating system is macOS
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "Detected macOS."
+        
+        # Check if Homebrew is installed
+        if ! command -v brew &> /dev/null; then
+            echo "Homebrew is not installed. Installing..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+        
+        # Check if Python 3 is installed
+        if ! command -v python3 &> /dev/null; then
+            echo "Python 3 is not installed. Installing..."
+            brew install python@3
+        fi
+        
+        # Check if yt-dlp is installed under Python 3 and update it
+        if ! command -v yt-dlp &> /dev/null; then
+            install_ytdlp_python3
+        else
+            echo "Checking for yt-dlp updates..."
+            install_ytdlp_python3
+        fi
+    else
+        echo "This script is intended for macOS only."
+        exit 1
     fi
-    
-    # Check if Python 3 is installed
-    if ! command -v python3 &> /dev/null; then
-        echo "Python 3 is not installed. Installing..."
-        brew install python@3
-    fi
-    
-    # Check if yt-dlp is installed under Python 3
-    if ! command -v yt-dlp &> /dev/null; then
-        install_ytdlp_python3
-    fi
-else
-    echo "This script is intended for macOS only."
-    exit 1
-fi
+}
 
-# Function to download videos asynchronously
-download_videos_async() {
+# Function to download videos or audio asynchronously
+download_async() {
+    local mode="$2"
     while IFS= read -r url; do
-        get_title_and_ext "$url"
-        if check_video_exists "$title" "$ext"; then
+        get_title_and_ext "$url" "$mode"
+        if check_file_exists "$title" "$ext"; then
             echo "Skipping download for $title.$ext"
         else
-            yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$url" &
+            if [[ "$mode" == "audio" ]]; then
+                yt-dlp --extract-audio --audio-format m4a -o "downloaded_videos/%(title)s.%(ext)s" "$url" &
+            else
+                yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$url" &
+            fi
         fi
     done < "$1"
     wait
 }
 
-# Check if only one argument provided
-if [ $# -eq 1 ]; then
-    # Check if it's a file or a single URL
-    if [ -f "$1" ]; then
-        echo "Downloading videos from URLs listed in file: $1"
-        mkdir -p downloaded_videos
-        download_videos_async "$1"
+# Main script logic
+init  # Run the initialization function
+
+# Check if only one or two arguments are provided
+if [ $# -ge 1 ]; then
+    # Determine if audio-only mode is enabled
+    if [ "$2" == "--audio" ]; then
+        mode="audio"
     else
-        echo "Downloading video from single URL: $1"
-        get_title_and_ext "$1"
-        if check_video_exists "$title" "$ext"; then
+        mode="video"
+    fi
+
+    # Check if the first argument is a file or a single URL
+    if [ -f "$1" ]; then
+        echo "Downloading $mode from URLs listed in file: $1"
+        mkdir -p downloaded_videos
+        download_async "$1" "$mode"
+    else
+        echo "Downloading $mode from single URL: $1"
+        get_title_and_ext "$1" "$mode"
+        if check_file_exists "$title" "$ext"; then
             echo "Skipping download for $title.$ext"
         else
-            yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$1" &
+            if [[ "$mode" == "audio" ]]; then
+                yt-dlp --extract-audio --audio-format m4a -o "downloaded_videos/%(title)s.%(ext)s" "$1" &
+            else
+                yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$1" &
+            fi
         fi
     fi
 else
-    echo "Usage: $0 input_file.txt or $0 url"
+    echo "Usage: $0 input_file.txt [--audio] or $0 url [--audio]"
     exit 1
 fi
 

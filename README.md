@@ -33,16 +33,10 @@ This script is designed to download videos using the yt-dlp library. It is speci
 
 ## Usage
 
-### Downloading Videos
+### Downloading Videos or Audio
 
-You can download videos either from a list of URLs provided in a text file or directly from a single URL.
+You can download videos or extract audio either from a list of URLs provided in a text file or directly from a single URL.
 
-**From a text file or URL:**
-
-```bash
-./youtube_downloader.sh input_file.txt
-./youtube_downloader.sh url
-```
 
 # Zsh Setup Script
 

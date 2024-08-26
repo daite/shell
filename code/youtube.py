@@ -4,9 +4,6 @@ import os
 from googleapiclient.discovery import build
 import yt_dlp
 
-# Replace with your YouTube Data API v3 key
-#API_KEY = 'AIzaSyAbDw0w3QS_OhCZ6vW72QxdQjYN_oViM70'
-
 # File to store the API key
 CONFIG_FILE = 'config.json'
 

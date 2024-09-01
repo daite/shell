@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Program version
+VERSION="0.2.0"
+
+# Display program version
+echo "Script version: $VERSION"
+
 # Function to install or upgrade yt-dlp using Python 3
 install_ytdlp_python3() {
     echo "Installing or upgrading yt-dlp using Python 3..."

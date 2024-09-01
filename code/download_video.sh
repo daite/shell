@@ -30,6 +30,9 @@ get_title_and_ext() {
 
 # Initialization function to set up the environment and ensure yt-dlp is up to date
 init() {
+    # Create the directory for downloaded videos if it doesn't exist
+    mkdir -p downloaded_videos
+
     # Check if the operating system is macOS
     if [[ "$(uname)" == "Darwin" ]]; then
         echo "Detected macOS."
@@ -92,7 +95,6 @@ if [ $# -ge 1 ]; then
     # Check if the first argument is a file or a single URL
     if [ -f "$1" ]; then
         echo "Downloading $mode from URLs listed in file: $1"
-        mkdir -p downloaded_videos
         download_async "$1" "$mode"
     else
         echo "Downloading $mode from single URL: $1"
@@ -105,11 +107,13 @@ if [ $# -ge 1 ]; then
             else
                 yt-dlp --write-sub -o "downloaded_videos/%(title)s.%(ext)s" "$1" &
             fi
+            wait  # Wait for the download to finish
+            local file_path="downloaded_videos/$title.$ext"
+            open -a vlc "$file_path"  # Open the file in VLC, properly quotedd
         fi
     fi
 else
     echo "Usage: $0 input_file.txt [--audio] or $0 url [--audio]"
     exit 1
 fi
-
 echo "Download initiated. It may take some time to complete."

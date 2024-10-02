@@ -1,8 +1,10 @@
 import argparse
 import json
 import os
+import re
 from googleapiclient.discovery import build
 import yt_dlp
+from googleapiclient.errors import HttpError
 
 # File to store the API key
 CONFIG_FILE = 'config.json'
@@ -50,9 +52,38 @@ class YouTubeDownloader:
             title = item['snippet']['title']
             video_id = item['id']['videoId']
             video_url = f'https://www.youtube.com/watch?v={video_id}'
-            videos.append((title, video_url))
+            
+            # Fetch video duration using video_id
+            duration = self.get_video_duration(video_id)
+            
+            videos.append((title, video_url, duration))
 
         return videos
+
+    def get_video_duration(self, video_id):
+        try:
+            request = self.youtube.videos().list(
+                part='contentDetails',
+                id=video_id
+            )
+            response = request.execute()
+            duration = response['items'][0]['contentDetails']['duration']
+            return self.parse_duration(duration)
+        except HttpError as e:
+            print(f"An error occurred: {e}")
+            return "Unknown"
+
+    def parse_duration(self, duration):
+        # Parse ISO 8601 duration format (e.g., PT1H2M3S) into a human-readable format
+        hours = re.search(r'(\d+)H', duration)
+        minutes = re.search(r'(\d+)M', duration)
+        seconds = re.search(r'(\d+)S', duration)
+        
+        hours = int(hours.group(1)) if hours else 0
+        minutes = int(minutes.group(1)) if minutes else 0
+        seconds = int(seconds.group(1)) if seconds else 0
+        
+        return f'{hours}h {minutes}m {seconds}s' if hours > 0 else f'{minutes}m {seconds}s'
 
     def download_video_with_subtitles(self, video_url):
         ydl_opts = {
@@ -60,11 +91,19 @@ class YouTubeDownloader:
             'writesubtitles': True,  # Download subtitles
             'subtitleslangs': ['en'],  # Specify the subtitle language(s) you want (e.g., 'en' for English)
             'subtitlesformat': 'srt',  # Subtitle format (e.g., 'srt' or 'vtt')
-
+            'outtmpl': '%(title)s.%(ext)s'  # Save file with video title
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([video_url])
+            result = ydl.download([video_url])
+            # Get the downloaded file name and calculate file size
+            info_dict = ydl.extract_info(video_url, download=False)
+            filename = ydl.prepare_filename(info_dict)
+            if os.path.exists(filename):
+                file_size = os.path.getsize(filename)
+                print(f"Downloaded file size: {file_size / (1024 * 1024):.2f} MB")
+            else:
+                print("File size could not be determined.")
 
     def select_channel_and_download(self, num_videos):
         try:
@@ -78,8 +117,8 @@ class YouTubeDownloader:
             videos = self.get_videos(selected_channel_id, num_videos)
 
             print("\nAvailable videos:\n")
-            for idx, (title, _) in enumerate(videos):
-                print(f"{idx + 1}. {title}")
+            for idx, (title, _, duration) in enumerate(videos):
+                print(f"{idx + 1}. {title} (Duration: {duration})")
 
             video_choice = int(input("\nSelect the number of the video to download: ")) - 1
 

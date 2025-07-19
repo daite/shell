@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately on errors, undefined variables, or failed pipes
+set -euo pipefail
+
 # Check if the script is running on macOS
 if [[ $(uname) != "Darwin" ]]; then
     echo "This script is intended for macOS only."
@@ -17,11 +20,22 @@ if ! command -v brew &> /dev/null; then
 fi
 
 # Array of Homebrew formulae and casks to install
-formulae=("zsh-autosuggestions" "zsh-syntax-highlighting" "python@3" "ffmpeg", "golang")
-casks=("vlc" "google-chrome" "qbittorrent" "visual-studio-code")
+formulae=(
+    "zsh-autosuggestions"
+    "zsh-syntax-highlighting"
+    "python@3"
+    "ffmpeg"
+    "golang"
+)
+casks=(
+    "vlc"
+    "google-chrome"
+    "qbittorrent"
+    "visual-studio-code"
+)
 
 # Install Homebrew formulae
-for formula in "${formulae[@]}"; then
+for formula in "${formulae[@]}"; do
     if ! brew list --formula | grep -q "$formula"; then
         echo "Installing $formula..."
         brew install "$formula"
@@ -62,7 +76,7 @@ if [ ! -d "$HOME/powerlevel10k" ]; then
     fi
 fi
 
-# Add Powerlevel10k to the .zshrc file if not already present
+# Add Powerlevel10k theme to .zshrc if not already present
 if ! grep -q "source ~/powerlevel10k/powerlevel10k.zsh-theme" ~/.zshrc; then
     echo "Adding Powerlevel10k to .zshrc..."
     echo "source ~/powerlevel10k/powerlevel10k.zsh-theme" >> ~/.zshrc
@@ -78,7 +92,7 @@ if ! pip3 list | grep -q "yt-dlp"; then
     fi
 fi
 
-# Reload .zshrc to start Powerlevel10k configuration
+# Reload .zshrc to apply changes
 source ~/.zshrc
 
 echo "Setup complete."
